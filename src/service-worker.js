@@ -11,7 +11,7 @@ import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import { StaleWhileRevalidate, NetworkFirst } from 'workbox-strategies';
 
 clientsClaim();
 
@@ -57,6 +57,22 @@ registerRoute(
       // Ensure that once this runtime cache reaches a maximum size the
       // least-recently used images are removed.
       new ExpirationPlugin({ maxEntries: 50 }),
+    ],
+  })
+);
+
+// Cache Frankfurter currency exchange API responses.
+// Strategy: NetworkFirst — always try the live API first; fall back to the
+// cached response when the user is offline so the last known rate is shown.
+registerRoute(
+  ({ url }) => url.origin === 'https://api.frankfurter.dev',
+  new NetworkFirst({
+    cacheName: 'frankfurter-currency-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 100,          // up to 100 distinct currency pairs
+        maxAgeSeconds: 60 * 60,   // cached rates expire after 1 hour
+      }),
     ],
   })
 );

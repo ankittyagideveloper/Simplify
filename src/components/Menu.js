@@ -11,18 +11,26 @@ const App = () => {
       <Container>
         <LinkContainer to="/">
           <Navbar.Brand>
-            <img src="/logo.png" alt="logo" />
+            <img src={`${process.env.PUBLIC_URL}/logo.png`} alt="logo" height="30" />
           </Navbar.Brand>
         </LinkContainer>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
+            <LinkContainer to="/">
+              <Nav.Link>Home</Nav.Link>
+            </LinkContainer>
+
             <LinkContainer to="/about">
               <Nav.Link>About</Nav.Link>
             </LinkContainer>
 
             <LinkContainer to="/contact">
               <Nav.Link>Contact</Nav.Link>
+            </LinkContainer>
+
+            <LinkContainer to="/currency">
+              <Nav.Link>Currency</Nav.Link>
             </LinkContainer>
           </Nav>
         </Navbar.Collapse>
