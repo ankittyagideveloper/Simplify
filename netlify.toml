@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # CRA treats warnings as errors when CI=true (Netlify sets it); bootstrap triggers an autoprefixer warning.
+  CI = "false"
