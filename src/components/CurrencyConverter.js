@@ -7,33 +7,66 @@ import {
   FormControl,
   Button,
   Form,
-  Spinner,
   Alert,
 } from "react-bootstrap";
 import "./Menu.scss";
 
-const CURRENCIES = [
+const DEFAULT_CURRENCIES = [
   "USD", "EUR", "GBP", "INR", "JPY", "AUD", "CAD", "CHF",
   "CNY", "SGD", "AED", "MYR", "NZD", "HKD", "SEK", "NOK",
 ];
 
 const API = "https://api.frankfurter.dev";
+const CACHE_KEY = "fx_rates_v1";
 
-function convert(base, quote, amount) {
-  return fetch(`${API}/v2/rate/${base}/${quote}`)
-    .then((r) => r.json())
-    .then((d) => (amount * d.rate).toFixed(2));
-}
+const loadCache = () => {
+  try {
+    return JSON.parse(localStorage.getItem(CACHE_KEY));
+  } catch {
+    return null;
+  }
+};
+
+// Fetch all rates (EUR base) and persist them for offline use.
+const fetchAllRates = async () => {
+  const res = await fetch(`${API}/v2/rates`);
+  if (!res.ok) throw new Error("Bad response");
+  const list = await res.json();
+  const rates = { EUR: 1 };
+  let date = "";
+  list.forEach((r) => {
+    rates[r.quote] = r.rate;
+    if (r.date > date) date = r.date;
+  });
+  const data = { base: "EUR", date, rates, fetchedAt: Date.now() };
+  localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  return data;
+};
+
+const convertLocal = (rates, base, quote, amount) =>
+  ((amount * rates[quote]) / rates[base]).toFixed(2);
 
 const CurrencyConverter = () => {
   const [amount, setAmount] = useState("");
   const [base, setBase] = useState("INR");
   const [quote, setQuote] = useState("USD");
   const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [fromCache, setFromCache] = useState(false);
+  const [ratesData, setRatesData] = useState(loadCache);
+
+  // Refresh the rates cache whenever we are online
+  useEffect(() => {
+    if (!isOnline) return;
+    fetchAllRates()
+      .then((d) => setRatesData(d))
+      .catch(() => {}); // keep whatever is cached
+  }, [isOnline]);
+
+  const currencies = ratesData
+    ? Object.keys(ratesData.rates).sort()
+    : DEFAULT_CURRENCIES;
 
   // Track online/offline status
   useEffect(() => {
@@ -58,25 +91,14 @@ const CurrencyConverter = () => {
       setFromCache(false);
       return;
     }
+    const rates = ratesData && ratesData.rates;
+    if (!rates || !rates[base] || !rates[quote]) {
+      setError("No exchange rates available. Connect to the internet once to download them.");
+      return;
+    }
     setError("");
-    setResult(null);
-    setFromCache(false);
-    setLoading(true);
-
-    // Detect whether the response came from the service worker cache
-    // by checking online status before and after the fetch resolves.
-    const wasOnline = navigator.onLine;
-
-    convert(base.toLowerCase(), quote.toLowerCase(), parsed)
-      .then((res) => {
-        setResult(res);
-        setFromCache(!wasOnline || !navigator.onLine);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to fetch exchange rate. Please try again.");
-        setLoading(false);
-      });
+    setResult(convertLocal(rates, base, quote, parsed));
+    setFromCache(!isOnline);
   };
 
   const handleSwap = () => {
@@ -126,7 +148,7 @@ const CurrencyConverter = () => {
         <Col>
           <Form.Label>From</Form.Label>
           <Form.Select value={base} onChange={(e) => { setBase(e.target.value); setResult(null); }}>
-            {CURRENCIES.map((c) => (
+            {currencies.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
           </Form.Select>
@@ -141,7 +163,7 @@ const CurrencyConverter = () => {
         <Col>
           <Form.Label>To</Form.Label>
           <Form.Select value={quote} onChange={(e) => { setQuote(e.target.value); setResult(null); }}>
-            {CURRENCIES.map((c) => (
+            {currencies.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
           </Form.Select>
@@ -151,9 +173,9 @@ const CurrencyConverter = () => {
           <Button
             className="navbar"
             onClick={handleConvert}
-            disabled={!amount || loading}
+            disabled={!amount}
           >
-            {loading ? <Spinner animation="border" size="sm" /> : "Convert"}
+            Convert
           </Button>
         </Col>
       </Row>
@@ -169,7 +191,7 @@ const CurrencyConverter = () => {
             </div>
             {fromCache && (
               <Form.Text className="text-muted">
-                ⚠ Showing cached rate — connect to the internet for the latest rate.
+                ⚠ Showing cached rates{ratesData && ratesData.date ? ` from ${ratesData.date}` : ""} — connect to the internet for the latest rates.
               </Form.Text>
             )}
           </Col>
