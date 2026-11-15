@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/Simplify/static/css/main.0e840509.css",
-    "main.js": "/Simplify/static/js/main.2ab8157e.js",
-    "static/js/453.9baf12ef.chunk.js": "/Simplify/static/js/453.9baf12ef.chunk.js",
-    "service-worker.js": "/Simplify/service-worker.js",
-    "index.html": "/Simplify/index.html",
-    "main.0e840509.css.map": "/Simplify/static/css/main.0e840509.css.map",
-    "main.2ab8157e.js.map": "/Simplify/static/js/main.2ab8157e.js.map",
-    "453.9baf12ef.chunk.js.map": "/Simplify/static/js/453.9baf12ef.chunk.js.map"
+    "main.css": "/simplify/static/css/main.0e840509.css",
+    "main.js": "/simplify/static/js/main.b2c6ac74.js",
+    "static/js/453.9baf12ef.chunk.js": "/simplify/static/js/453.9baf12ef.chunk.js",
+    "service-worker.js": "/simplify/service-worker.js",
+    "index.html": "/simplify/index.html",
+    "main.0e840509.css.map": "/simplify/static/css/main.0e840509.css.map",
+    "main.b2c6ac74.js.map": "/simplify/static/js/main.b2c6ac74.js.map",
+    "453.9baf12ef.chunk.js.map": "/simplify/static/js/453.9baf12ef.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.0e840509.css",
-    "static/js/main.2ab8157e.js"
+    "static/js/main.b2c6ac74.js"
   ]
 }
