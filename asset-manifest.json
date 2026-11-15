@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/Simplify/static/css/main.0e840509.css",
+    "main.js": "/Simplify/static/js/main.2ab8157e.js",
+    "static/js/453.9baf12ef.chunk.js": "/Simplify/static/js/453.9baf12ef.chunk.js",
+    "service-worker.js": "/Simplify/service-worker.js",
+    "index.html": "/Simplify/index.html",
+    "main.0e840509.css.map": "/Simplify/static/css/main.0e840509.css.map",
+    "main.2ab8157e.js.map": "/Simplify/static/js/main.2ab8157e.js.map",
+    "453.9baf12ef.chunk.js.map": "/Simplify/static/js/453.9baf12ef.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0e840509.css",
+    "static/js/main.2ab8157e.js"
+  ]
+}
