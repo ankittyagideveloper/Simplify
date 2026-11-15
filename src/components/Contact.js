@@ -31,6 +31,7 @@ const Contact = () => {
             style={{ textDecoration: "none" }}
             href="https://www.linkedin.com/in/ankittyagi-webdeveloper/"
             target="_blank"
+            rel="noopener noreferrer"
           >
             <Button variant="primary" className="navbar">
               linkedin
